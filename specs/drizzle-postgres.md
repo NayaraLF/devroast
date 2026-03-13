@@ -160,15 +160,27 @@ src/
    - ✅ Sem autenticação (sistema anônimo)
 
 2. **IA para Roasts**: Onde será processada a geração de roasts?
-   - API externa?
-   - AI local (LLM)?
-   - Regras fixas (por agora)?
+   - ✅ LLM local (self-hosted)
 
 3. **Leaderboard**: Como será calculado o ranking?
-   - Apenas por score médio?
-   - Considerar número de submissions?
-   - Filtrar por período (semana, mês, all-time)?
+   - ✅ Por score médio
 
 4. **Dados Iniciais**: Precisamos popular o banco com dados fake para demonstração?
+   - ✅ Não (banco vazio)
 
 5. **Migrations**: Prefere usar migrations formais ou `drizzle-kit push` para desenvolvimento?
+
+## 8. Status da Implementação
+
+- [x] Criar arquivo `docker-compose.yml` na raiz
+- [x] Criar arquivo `.env` com `DATABASE_URL`
+- [x] Instalar dependências: `drizzle-orm`, `drizzle-kit`, `postgres`
+- [x] Criar `src/db/schema.ts` com definições de tabelas
+- [x] Criar `src/db/index.ts` com conexão
+- [x] Configurar `drizzle.config.ts`
+- [x] Criar script `db:push` no package.json
+- [x] Criar script `db:studio` no package.json
+- [x] Executar `docker-compose up -d` para subir Postgres
+- [x] Executar `npm run db:push` para criar tabelas
+- [ ] Criar seed inicial (opcional)
+- [ ] Criar helper functions para CRUD
