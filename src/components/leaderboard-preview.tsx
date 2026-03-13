@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { forwardRef, type HTMLAttributes } from "react";
+import type { HTMLAttributes } from "react";
 import { twMerge } from "tailwind-merge";
 
 const MOCK_ROWS = [

@@ -1,5 +1,4 @@
-import { CodeBlock, getCodeHtml } from "@/components/ui/code-block";
-import { CodeBlockWithCopy } from "@/components/ui/code-block-with-copy";
+import { CodeBlock } from "@/components/ui/code-block";
 
 const sampleCode = `function calculateTotal(items) {
   var total = 0;
@@ -16,8 +15,6 @@ const sampleCode = `function calculateTotal(items) {
 }`;
 
 export default async function CodeBlockExamplesPage() {
-  const sampleCodeHtml = await getCodeHtml(sampleCode, "javascript");
-
   return (
     <div className="min-h-screen bg-bg-page p-8 font-mono">
       <div className="mx-auto max-w-4xl space-y-12">
@@ -37,13 +34,9 @@ export default async function CodeBlockExamplesPage() {
 
           <div className="space-y-4">
             <p className="text-sm text-text-secondary">
-              Com botão copiar (Client Component)
+              Server Component com botão copiar
             </p>
-            <CodeBlockWithCopy
-              code={sampleCode}
-              language="javascript"
-              html={sampleCodeHtml}
-            />
+            <CodeBlock code={sampleCode} language="javascript" showCopyButton />
           </div>
         </section>
       </div>

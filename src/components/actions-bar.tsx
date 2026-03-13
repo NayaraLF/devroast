@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, type HTMLAttributes, useState } from "react";
+import { type HTMLAttributes, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
 export function ActionsBarRoot({
