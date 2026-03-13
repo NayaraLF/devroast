@@ -1,8 +1,24 @@
 "use client";
 
+import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { submitCode } from "@/app/actions";
+
+const LANGUAGES = [
+  "javascript",
+  "typescript",
+  "python",
+  "java",
+  "go",
+  "rust",
+  "ruby",
+  "php",
+  "csharp",
+  "html",
+  "css",
+  "sql",
+];
 
 const DEFAULT_CODE = `function calculateTotal(items) {
   var total = 0;
@@ -20,6 +36,31 @@ interface RoastResult {
   score: string;
   feedback: string;
   improvements: string[];
+}
+
+export function LanguageSelector({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (lang: string) => void;
+}) {
+  return (
+    <div className="relative flex items-center gap-1">
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="appearance-none bg-transparent font-mono text-xs text-text-tertiary outline-none cursor-pointer"
+      >
+        {LANGUAGES.map((lang) => (
+          <option key={lang} value={lang}>
+            {lang}
+          </option>
+        ))}
+      </select>
+      <ChevronDown className="h-3 w-3 text-text-tertiary" />
+    </div>
+  );
 }
 
 export function CodeInputRoot({
@@ -320,6 +361,7 @@ export function RoastResultCard({
 
 export function CodeInputSection() {
   const [code, setCode] = useState(DEFAULT_CODE);
+  const [language, setLanguage] = useState("javascript");
   const [roastMode, setRoastMode] = useState(true);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<RoastResult | null>(null);
@@ -333,7 +375,7 @@ export function CodeInputSection() {
     try {
       const response = await submitCode({
         code,
-        language: "javascript",
+        language,
         roastMode,
       });
       setResult({
@@ -362,9 +404,7 @@ export function CodeInputSection() {
           <CodeInputRoot>
             <CodeInputHeader>
               <CodeInputDots />
-              <span className="font-mono text-xs text-text-tertiary">
-                javascript
-              </span>
+              <LanguageSelector value={language} onChange={setLanguage} />
             </CodeInputHeader>
             <CodeInputBody>
               <CodeInputLineNumbers lineCount={Math.max(lines.length, 10)} />
