@@ -18,33 +18,31 @@ export const submissionStatusEnum = pgEnum("submission_status", [
 ]);
 
 export const submissions = pgTable("submissions", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  code: text("code").notNull(),
-  language: varchar("language", { length: 30 }).notNull(),
-  roastMode: boolean("roast_mode").notNull().default(true),
-  status: submissionStatusEnum("status").notNull().default("pending"),
-  ipHash: varchar("ip_hash", { length: 64 }),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  id: uuid().primaryKey().defaultRandom(),
+  code: text().notNull(),
+  language: varchar({ length: 30 }).notNull(),
+  roastMode: boolean().notNull().default(true),
+  status: submissionStatusEnum().notNull().default("pending"),
+  ipHash: varchar({ length: 64 }),
+  createdAt: timestamp().notNull().defaultNow(),
+  updatedAt: timestamp().notNull().defaultNow(),
 });
 
 export const roasts = pgTable("roasts", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  submissionId: uuid("submission_id")
-    .notNull()
-    .references(() => submissions.id, { onDelete: "cascade" }),
-  score: decimal("score", { precision: 3, scale: 2 }).notNull(),
-  feedback: text("feedback").notNull(),
-  improvements: text("improvements").array(),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
+  id: uuid().primaryKey().defaultRandom(),
+  submissionId: uuid().notNull(),
+  score: decimal({ precision: 3, scale: 2 }).notNull(),
+  feedback: text().notNull(),
+  improvements: text().array(),
+  createdAt: timestamp().notNull().defaultNow(),
 });
 
 export const leaderboard = pgTable("leaderboard", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  ipHash: varchar("ip_hash", { length: 64 }).notNull().unique(),
-  totalSubmissions: integer("total_submissions").notNull().default(0),
-  averageScore: decimal("average_score", { precision: 3, scale: 2 }),
-  bestScore: decimal("best_score", { precision: 3, scale: 2 }),
-  rank: integer("rank"),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  id: uuid().primaryKey().defaultRandom(),
+  ipHash: varchar({ length: 64 }).notNull(),
+  totalSubmissions: integer().notNull().default(0),
+  averageScore: decimal({ precision: 3, scale: 2 }),
+  bestScore: decimal({ precision: 3, scale: 2 }),
+  rank: integer(),
+  updatedAt: timestamp().notNull().defaultNow(),
 });
