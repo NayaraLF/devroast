@@ -1,5 +1,6 @@
 import { JetBrains_Mono } from "next/font/google";
 import { Navbar, NavbarLink, NavbarLogo } from "@/components/navbar";
+import { TRPCReactProvider } from "@/trpc/client";
 import "./globals.css";
 
 const jetbrainsMono = JetBrains_Mono({
@@ -15,11 +16,13 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${jetbrainsMono.variable} font-sans`}>
-        <Navbar>
-          <NavbarLogo />
-          <NavbarLink href="/leaderboard">leaderboard</NavbarLink>
-        </Navbar>
-        <main>{children}</main>
+        <TRPCReactProvider>
+          <Navbar>
+            <NavbarLogo />
+            <NavbarLink href="/leaderboard">leaderboard</NavbarLink>
+          </Navbar>
+          <main>{children}</main>
+        </TRPCReactProvider>
       </body>
     </html>
   );

@@ -1,13 +1,12 @@
-import { getStats } from "@/app/actions";
+import { HydrateClient, prefetch, trpc } from "@/trpc/server";
+import { FooterStatsContent } from "./footer-stats-content";
 
 export async function FooterStats() {
-  const stats = await getStats();
+  prefetch(trpc.stats.queryOptions());
 
   return (
-    <div className="flex justify-center gap-6 font-mono text-sm text-text-tertiary">
-      <span>{stats.totalCodes.toLocaleString()} codes roasted</span>
-      <span>·</span>
-      <span>avg score: {stats.avgScore}/10</span>
-    </div>
+    <HydrateClient>
+      <FooterStatsContent />
+    </HydrateClient>
   );
 }
