@@ -1,32 +1,42 @@
 # DevRoast
 
-A code review tool that helps developers improve their code through interactive feedback and gamification.
+Uma ferramenta de code review interativa que ajuda desenvolvedores a melhorarem seu código através de feedback construtivo e gamificação.
 
-## Features
+## Funcionalidades
 
-- **Interactive Code Review**: Submit your code and receive detailed, constructive feedback
-- **Leaderboard**: Compete with other developers and climb the rankings
-- **Real-time Stats**: Track your progress and see how you stack up
+- **Revisão de Código Interativa**: Envie seu código e receba feedback detalhado e construtivo
+- **Leaderboard**: Compita com outros desenvolvedores e suba no ranking
+- **Estatísticas em Tempo Real**: Acompanhe seu progresso e veja como você se compara com outros
+- **Feedback Gamificado**: Receba "roasts" engraçados e úteis sobre seu código
 
-## Tech Stack
+## Tecnologias
 
-- Next.js 16 (App Router)
-- Tailwind CSS v4
-- Radix UI
-- Shiki (Syntax Highlighting)
+- **Next.js 16** (App Router)
+- **Tailwind CSS v4**
+- **Radix UI** (Componentes acessíveis)
+- **Shiki** (Syntax Highlighting)
 
-## Getting Started
+## Como Executar
 
 ```bash
-# Install dependencies
+# Instale as dependências
 npm install
 
-# Start development server
+# Inicie o servidor de desenvolvimento
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Abra [http://localhost:3000](http://localhost:3000) no seu navegador.
+
+## Scripts Disponíveis
+
+| Comando | Descrição |
+|---------|-----------|
+| `npm run dev` | Inicia o servidor de desenvolvimento |
+| `npm run build` | Build para produção |
+| `npm run lint` | Verifica erros com Biome |
+| `npm run format` | Formata o código com Biome |
 
 ---
 
-Built during NLW event by [Rocketseat](https://www.rocketseat.com.br)
+Desenvolvido durante o evento NLW pela [Rocketseat](https://www.rocketseat.com.br)
