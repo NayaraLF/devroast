@@ -20,6 +20,8 @@ const LANGUAGES = [
   "sql",
 ];
 
+const MAX_CODE_LENGTH = 2000;
+
 const DEFAULT_CODE = `function calculateTotal(items) {
   var total = 0;
   for (var i = 0; i < items.length; i++) {
@@ -120,7 +122,7 @@ export function CodeInputBody({
   return (
     <div
       className={twMerge(
-        "flex min-h-[360px] max-h-[500px] overflow-y-auto bg-bg-input",
+        "relative flex min-h-[360px] max-h-[500px] flex-col overflow-y-auto bg-bg-input",
         className,
       )}
       {...props}
@@ -369,6 +371,10 @@ export function CodeInputSection() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<RoastResult | null>(null);
 
+  const codeLength = code.length;
+  const isOverLimit = codeLength > MAX_CODE_LENGTH;
+  const canSubmit = code.trim().length > 0 && !isOverLimit;
+
   const lines = code.split("\n");
 
   const handleSubmit = async () => {
@@ -413,10 +419,20 @@ export function CodeInputSection() {
               <CodeInputLineNumbers lineCount={Math.max(lines.length, 10)} />
               <CodeInputTextarea
                 value={code}
-                onChange={(e) => setCode(e.target.value)}
+                onChange={(e) => {
+                  if (e.target.value.length <= MAX_CODE_LENGTH) {
+                    setCode(e.target.value);
+                  }
+                }}
                 spellCheck={false}
                 placeholder="Paste your code here..."
               />
+              <div className="absolute bottom-2 right-2 font-mono text-xs text-text-tertiary">
+                <span className={isOverLimit ? "text-accent-red" : ""}>
+                  {codeLength}
+                </span>
+                /{MAX_CODE_LENGTH}
+              </div>
             </CodeInputBody>
           </CodeInputRoot>
 
@@ -438,9 +454,13 @@ export function CodeInputSection() {
             </ActionsBarLeft>
             <ActionsBarButton
               onClick={handleSubmit}
-              disabled={loading || !code.trim()}
+              disabled={loading || !canSubmit}
             >
-              {loading ? "Roasting..." : "$ roast_my_code"}
+              {loading
+                ? "Roasting..."
+                : isOverLimit
+                  ? "$ code_too_long"
+                  : "$ roast_my_code"}
             </ActionsBarButton>
           </ActionsBarRoot>
         </>
