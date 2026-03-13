@@ -17,27 +17,17 @@ Com base na análise do código existente:
 
 ### 3.1 Tabelas
 
-#### `users`
-Armazena informações dos usuários (mesmo que anônimos inicialmente, pode ser expandido para auth).
-
-| Coluna | Tipo | Descrição |
-|--------|------|------------|
-| id | uuid | PK, identificador único |
-| username | varchar(50) | Nome de usuário (opcional) |
-| created_at | timestamp | Data de criação |
-| updated_at | timestamp | Data de atualização |
-
 #### `submissions`
-Armazena os códigos enviados pelos usuários.
+Armazena os códigos enviados pelos usuários (anônimos).
 
 | Coluna | Tipo | Descrição |
 |--------|------|------------|
 | id | uuid | PK, identificador único |
-| user_id | uuid | FK para users (opcional, pode ser NULL para anônimos) |
 | code | text | Código fonte enviado |
 | language | varchar(30) | Linguagem detectada/selecionada |
 | roast_mode | boolean | true = sarcástico, false = construtivo |
 | status | enum | pending, processing, completed, failed |
+| ip_hash | varchar(64) | Hash do IP para tracking anônimo |
 | created_at | timestamp | Data de envio |
 | updated_at | timestamp | Data de atualização |
 
@@ -54,12 +44,12 @@ Armazena os reviews/roasts gerados para cada submission.
 | created_at | timestamp | Data de criação |
 
 #### `leaderboard`
-Tabela materializada para o leaderboard (pode ser view ou tabela caching).
+Tabela para cache do leaderboard.
 
 | Coluna | Tipo | Descrição |
 |--------|------|------------|
 | id | uuid | PK |
-| user_id | uuid | FK para users |
+| ip_hash | varchar(64) | Hash do IP (tracking anônimo) |
 | total_submissions | integer | Total de submissions |
 | average_score | decimal(3,2) | Média de scores |
 | best_score | decimal(3,2) | Melhor score |
@@ -167,8 +157,7 @@ src/
 ## 7. Perguntas em Aberto
 
 1. **Autenticação**: Precisamos de sistema de autenticação?
-   - Se sim, qual provedor? (NextAuth, custom, etc)
-   - Se não, submissions podem ser anônimas?
+   - ✅ Sem autenticação (sistema anônimo)
 
 2. **IA para Roasts**: Onde será processada a geração de roasts?
    - API externa?
