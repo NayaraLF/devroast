@@ -122,7 +122,7 @@ export function CodeInputBody({
   return (
     <div
       className={twMerge(
-        "relative flex min-h-[360px] max-h-[500px] flex-col overflow-y-auto bg-bg-input",
+        "relative flex min-h-[360px] max-h-[500px] overflow-y-auto bg-bg-input",
         className,
       )}
       {...props}
