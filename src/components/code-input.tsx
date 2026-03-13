@@ -119,7 +119,10 @@ export function CodeInputBody({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={twMerge("flex min-h-[360px] bg-bg-input", className)}
+      className={twMerge(
+        "flex min-h-[360px] max-h-[500px] overflow-y-auto bg-bg-input",
+        className,
+      )}
       {...props}
     >
       {children}
