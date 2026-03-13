@@ -45,10 +45,7 @@ O Ray.so (código aberto) utiliza:
 | Editor | `@uiw/react-codemirror` | Wrapper React para CodeMirror 6, bem mantido |
 | Linguagens | `@codemirror/lang-*` (dynamic loading) | Suporte a múltiplas linguagens |
 | Tema | Custom (baseado em vesper/shiki) | Manter consistência visual |
-| Detecção | highlight.js (auto) + fallback manual | Solução simples e funcional |
-
-### Alternativa (se necessário mais precisão na detecção)
-- Integrar **CodeDetectionAPI** (runtime.dev) como fallback
+| Detecção | **CodeDetectionAPI** (runtime.dev) | ML-based, mais precisa (~250ms, 30+ linguagens) |
 
 ## 4. Especificação Técnica
 
@@ -135,30 +132,49 @@ O editor deve ser integrado ao componente `CodeInput` existente:
 - Adicionar LanguageSelector acima do editor
 - Manter botão de submit "Roast My Code"
 
-## 6. TO-DO
+## 5. TO-DO
 
-- [ ] Instalar dependências: `@uiw/react-codemirror`, `@codemirror/lang-*`
+- [ ] Instalar dependências: `@uiw/react-codemirror`, `@codemirror/lang-*`, `highlight.js` (para fallback)
+- [ ] Obter API key do CodeDetectionAPI (runtime.dev)
 - [ ] Criar componente `CodeEditor` em `src/components/ui/`
 - [ ] Criar componente `LanguageSelector` em `src/components/ui/`
-- [ ] Implementar detecção automática de linguagem
+- [ ] Implementar serviço de detecção de linguagem (CodeDetectionAPI)
+- [ ] Implementar fallback com highlight.js se API falhar
+- [ ] Criar tema customizado CodeMirror baseado no Vesper (shiki)
 - [ ] Integrar editor ao componente `CodeInput` existente
-- [ ] Estilizar com tema consistente (baseado em vesper/shiki)
 - [ ] Testar performance com código grande
 - [ ] Adicionar testes
 
-## 7. Perguntas em Aberto
+## 6. Linguagens Iniciais (Subset)
+
+Suporte inicial (expansível):
+- JavaScript
+- TypeScript
+- Python
+- Java
+- Go
+- Rust
+- Ruby
+- PHP
+- C#
+- HTML
+- CSS
+- SQL
+- JSON
+- Shell/Bash
+- Plaintext
+
+## 7. Tema Visual
+
+O editor usará o tema **Vesper** (mesmo do Shiki já utilizado no projeto) através de um tema customizado CodeMirror.
+
+## 8. Perguntas em Aberto
 
 1. **Qual abordagem de detecção preferida?**
-   - highlight.js (simples, gratuito)
-   - CodeDetectionAPI (preciso, requer API key)
+   - ✅ CodeDetectionAPI (runtime.dev) - ML-based, mais precisa
 
-2. **O editor deve ser editável ou apenas visualização?**
-   - O objetivo é permitir o usuário colar código para ser analisado
-   - Precisamos de modo editável para colar código
+2. **Quantas linguagens precisamos suportar inicialmente?**
+   - ✅ Subset inicial (JS, TS, Python, Java, Go, Rust, etc)
 
-3. **Quantas linguagens precisamos suportar inicialmente?**
-   - Todas ou subset?
-
-4. **O theme deve ser igual ao Shiki (vesper) ou diferente?**
-   - CodeMirror usa sistema de temas diferente
-   - Precisamos criar tema custom ou adaptar um existente
+3. **O theme deve ser igual ao Shiki (vesper) ou diferente?**
+   - ✅ Tema Vesper (mesmo do Shiki)
