@@ -1,27 +1,7 @@
 import Link from "next/link";
 import type { HTMLAttributes } from "react";
 import { twMerge } from "tailwind-merge";
-
-const MOCK_ROWS = [
-  {
-    rank: "#1",
-    score: "9.8",
-    code: "async function fetchData() { ...",
-    lang: "javascript",
-  },
-  {
-    rank: "#2",
-    score: "9.5",
-    code: "const validateEmail = (email) => ...",
-    lang: "typescript",
-  },
-  {
-    rank: "#3",
-    score: "9.2",
-    code: "def calculate_metrics(data): ...",
-    lang: "python",
-  },
-];
+import { getLeaderboard } from "@/app/actions";
 
 export function LeaderboardPreviewRoot({
   className,
@@ -178,7 +158,9 @@ export function LeaderboardPreviewTableCell({
   );
 }
 
-export function LeaderboardPreview() {
+export async function LeaderboardPreview() {
+  const leaderboardData = await getLeaderboard();
+
   return (
     <LeaderboardPreviewRoot>
       <LeaderboardPreviewHeader>
@@ -198,28 +180,28 @@ export function LeaderboardPreview() {
           <LeaderboardPreviewTableHeaderCell className="w-16">
             score
           </LeaderboardPreviewTableHeaderCell>
-          <LeaderboardPreviewTableHeaderCell className="flex-1">
-            code
+          <LeaderboardPreviewTableHeaderCell className="w-20">
+            subs
           </LeaderboardPreviewTableHeaderCell>
           <LeaderboardPreviewTableHeaderCell className="w-20">
-            lang
+            best
           </LeaderboardPreviewTableHeaderCell>
         </LeaderboardPreviewTableHeader>
 
         <LeaderboardPreviewTableBody>
-          {MOCK_ROWS.map((row) => (
+          {leaderboardData.map((row) => (
             <LeaderboardPreviewTableRow key={row.rank}>
               <LeaderboardPreviewTableCell className="w-12 text-text-secondary">
-                {row.rank}
+                #{row.rank}
               </LeaderboardPreviewTableCell>
               <LeaderboardPreviewTableCell className="w-16 text-accent-green">
-                {row.score}
-              </LeaderboardPreviewTableCell>
-              <LeaderboardPreviewTableCell className="flex-1 truncate text-text-primary">
-                {row.code}
+                {Number(row.score).toFixed(1)}
               </LeaderboardPreviewTableCell>
               <LeaderboardPreviewTableCell className="w-20 text-text-tertiary">
-                {row.lang}
+                {row.totalSubmissions}
+              </LeaderboardPreviewTableCell>
+              <LeaderboardPreviewTableCell className="w-20 text-accent-amber">
+                {Number(row.bestScore).toFixed(1)}
               </LeaderboardPreviewTableCell>
             </LeaderboardPreviewTableRow>
           ))}

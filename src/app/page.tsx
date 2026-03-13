@@ -1,5 +1,4 @@
-import { ActionsBar } from "@/components/actions-bar";
-import { CodeInput } from "@/components/code-input";
+import { CodeInputSection } from "@/components/code-input";
 import { FooterStats } from "@/components/footer-stats";
 import { LeaderboardPreview } from "@/components/leaderboard-preview";
 
@@ -16,9 +15,7 @@ export default function HomePage() {
         </p>
       </div>
 
-      <CodeInput />
-
-      <ActionsBar />
+      <CodeInputSection />
 
       <FooterStats />
 
