@@ -148,6 +148,8 @@ async function recalculateRanking() {
 }
 
 export async function getLeaderboard() {
+  "use cache";
+
   try {
     const result = (await db.execute(
       "SELECT r.score, s.language, s.code FROM roasts r JOIN submissions s ON r.submission_id = s.id ORDER BY r.score ASC LIMIT 20",
@@ -180,6 +182,8 @@ export async function getLeaderboard() {
 }
 
 export async function getStats() {
+  "use cache";
+
   const totalSubmissions = await db
     .select({ count: submissions.id })
     .from(submissions);
@@ -202,6 +206,8 @@ export async function getStats() {
 }
 
 export async function getShameLeaderboard() {
+  "use cache";
+
   try {
     const result = (await db.execute(
       "SELECT r.score, s.language, s.code FROM roasts r JOIN submissions s ON r.submission_id = s.id ORDER BY r.score ASC LIMIT 3",

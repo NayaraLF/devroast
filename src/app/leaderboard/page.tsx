@@ -8,8 +8,6 @@ import {
 } from "@/components/leaderboard-entries";
 import { Navbar } from "@/components/navbar";
 
-export const revalidate = 3600;
-
 function LeaderboardSkeleton() {
   return (
     <div className="space-y-5">
