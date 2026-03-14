@@ -79,6 +79,8 @@ type ShameEntry = {
 };
 
 function LeaderboardEntry({ entry }: { entry: ShameEntry }) {
+  "use client";
+
   const [isOpen, setIsOpen] = useState(false);
   const lines = entry.code.split("\n");
   const isLong = lines.length > 5;
