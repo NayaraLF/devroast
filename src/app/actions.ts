@@ -228,6 +228,47 @@ async function recalculateRanking() {
 }
 
 export async function getLeaderboard() {
+  // Fallback when a DB is not available (e.g., production on Vercel without DB)
+  if (!process.env.DATABASE_URL) {
+    const fallback: any[] = [
+      {
+        rank: 1,
+        score: "9.0",
+        language: "ts",
+        code: "console.log('hello')",
+        html: "<pre>console.log('hello')</pre>",
+      },
+      {
+        rank: 2,
+        score: "8.5",
+        language: "javascript",
+        code: "console.log('hi')",
+        html: "<pre>console.log('hi')</pre>",
+      },
+      {
+        rank: 3,
+        score: "8.0",
+        language: "python",
+        code: "print('hi')",
+        html: "<pre>print('hi')</pre>",
+      },
+      {
+        rank: 4,
+        score: "7.5",
+        language: "go",
+        code: "package main\nfunc main() {}",
+        html: "<pre>package main</pre>",
+      },
+      {
+        rank: 5,
+        score: "7.0",
+        language: "typescript",
+        code: "type A = string;",
+        html: "<pre>type A = string;</pre>",
+      },
+    ];
+    return fallback;
+  }
   try {
     const result = (await db.execute(
       "SELECT r.score, s.language, s.code FROM roasts r JOIN submissions s ON r.submission_id = s.id ORDER BY r.score DESC LIMIT 20",
@@ -260,6 +301,12 @@ export async function getLeaderboard() {
 }
 
 export async function getStats() {
+  if (!process.env.DATABASE_URL) {
+    return {
+      totalCodes: 0,
+      avgScore: "0.0",
+    } as const;
+  }
   const totalSubmissions = await db
     .select({ count: submissions.id })
     .from(submissions);
