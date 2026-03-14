@@ -122,7 +122,7 @@ export function CodeInputBody({
   return (
     <div
       className={twMerge(
-        "relative flex min-h-[360px] max-h-[500px] overflow-y-auto bg-bg-input",
+        "relative flex min-h-[360px] w-full max-h-[500px] overflow-y-auto bg-bg-input",
         className,
       )}
       {...props}
@@ -159,7 +159,7 @@ export function CodeInputTextarea({
   return (
     <textarea
       className={twMerge(
-        "flex-1 resize-none bg-transparent p-4 font-mono text-sm text-text-primary outline-none",
+        "flex-1 w-full min-h-[300px] resize-none bg-transparent p-4 font-mono text-sm text-text-primary outline-none",
         className,
       )}
       {...props}
