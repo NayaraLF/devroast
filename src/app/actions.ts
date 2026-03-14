@@ -148,16 +148,35 @@ async function recalculateRanking() {
 }
 
 export async function getLeaderboard() {
-  return db
-    .select({
-      rank: leaderboard.rank,
-      score: leaderboard.averageScore,
-      totalSubmissions: leaderboard.totalSubmissions,
-      bestScore: leaderboard.bestScore,
-    })
-    .from(leaderboard)
-    .orderBy(leaderboard.rank)
-    .limit(10);
+  try {
+    const result = (await db.execute(
+      "SELECT r.score, s.language, s.code FROM roasts r JOIN submissions s ON r.submission_id = s.id ORDER BY r.score ASC LIMIT 20",
+    )) as { score: string; language: string; code: string }[];
+
+    const { codeToHtml } = await import("shiki");
+
+    const data = await Promise.all(
+      result.map(async (row, index) => {
+        const html = await codeToHtml(row.code, {
+          lang: row.language,
+          theme: "vesper",
+        });
+
+        return {
+          rank: index + 1,
+          score: row.score,
+          language: row.language,
+          code: row.code,
+          html,
+        };
+      }),
+    );
+
+    return data;
+  } catch (error) {
+    console.error("Error fetching leaderboard:", error);
+    return [];
+  }
 }
 
 export async function getStats() {
