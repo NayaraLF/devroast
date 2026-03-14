@@ -3,13 +3,13 @@
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
-import { CodeBlock } from "@/components/ui/code-block";
 
 export type ShameEntry = {
   rank: number;
   score: string;
   language: string;
   code: string;
+  html: string;
 };
 
 export function LeaderboardEntry({ entry }: { entry: ShameEntry }) {
@@ -57,7 +57,27 @@ export function LeaderboardEntry({ entry }: { entry: ShameEntry }) {
           !isOpen && isLong && "max-h-[200px] overflow-hidden",
         )}
       >
-        <CodeBlock code={entry.code} language={entry.language} />
+        <CodeBlockDisplay html={entry.html} code={entry.code} />
+      </div>
+    </div>
+  );
+}
+
+function CodeBlockDisplay({ html, code }: { html: string; code: string }) {
+  const lines = code.split("\n");
+
+  return (
+    <div className="relative overflow-hidden">
+      <div className="flex">
+        <div className="flex flex-col border-r border-border-primary bg-bg-elevated px-3 py-4 text-right font-mono text-xs text-text-tertiary">
+          {lines.map((_, index) => (
+            <span key={index}>{index + 1}</span>
+          ))}
+        </div>
+        <div
+          className="overflow-x-auto px-4 py-4 font-mono text-xs"
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
       </div>
     </div>
   );
