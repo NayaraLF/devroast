@@ -4,6 +4,8 @@ import { FooterStats } from "@/components/footer-stats";
 import { LeaderboardPreview } from "@/components/leaderboard-preview";
 import { LeaderboardPreviewSkeleton } from "@/components/leaderboard-preview-skeleton";
 
+export const revalidate = 3600;
+
 function FooterStatsSkeleton() {
   return (
     <div className="flex justify-center gap-6 font-mono text-sm">
