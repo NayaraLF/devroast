@@ -103,6 +103,10 @@ Observabilidade, Deploy e Manutenção
 - Ambiente local com Docker Compose (Postgres) e drizzle-kit para migrations/seeding
 - Variáveis de ambiente: DATABASE_URL, GOOGLE_API_KEY etc.
 - Build e deploy com Next.js (Vercel, Netlify, ou host semelhante)
+- Deploy automatizado no Vercel via GitHub Actions (push para main)
+- Requisitos de CI/CD:
+  - Secrets no GitHub: VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID
+  - O workflow deploy-vercel.yml cuida do deployment automático após merge em main
 - Checklist de produção: checar migrations, dados consistentes, chaves de IA seguras, URLs de OG image resolvidas
 
 Como configurar e rodar localmente
