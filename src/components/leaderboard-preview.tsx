@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { HTMLAttributes } from "react";
 import { twMerge } from "tailwind-merge";
-import { getLeaderboard } from "@/app/actions";
+import { getShameLeaderboard } from "@/app/actions";
 
 export function LeaderboardPreviewRoot({
   className,
@@ -159,7 +159,7 @@ export function LeaderboardPreviewTableCell({
 }
 
 export async function LeaderboardPreview() {
-  const leaderboardData = await getLeaderboard();
+  const shameData = await getShameLeaderboard();
 
   return (
     <LeaderboardPreviewRoot>
@@ -180,28 +180,22 @@ export async function LeaderboardPreview() {
           <LeaderboardPreviewTableHeaderCell className="w-16">
             score
           </LeaderboardPreviewTableHeaderCell>
-          <LeaderboardPreviewTableHeaderCell className="w-20">
-            subs
-          </LeaderboardPreviewTableHeaderCell>
-          <LeaderboardPreviewTableHeaderCell className="w-20">
-            best
+          <LeaderboardPreviewTableHeaderCell className="flex-1">
+            lang
           </LeaderboardPreviewTableHeaderCell>
         </LeaderboardPreviewTableHeader>
 
         <LeaderboardPreviewTableBody>
-          {leaderboardData.map((row) => (
+          {shameData.map((row) => (
             <LeaderboardPreviewTableRow key={row.rank}>
               <LeaderboardPreviewTableCell className="w-12 text-text-secondary">
                 #{row.rank}
               </LeaderboardPreviewTableCell>
-              <LeaderboardPreviewTableCell className="w-16 text-accent-green">
+              <LeaderboardPreviewTableCell className="w-16 text-accent-red">
                 {Number(row.score).toFixed(1)}
               </LeaderboardPreviewTableCell>
-              <LeaderboardPreviewTableCell className="w-20 text-text-tertiary">
-                {row.totalSubmissions}
-              </LeaderboardPreviewTableCell>
-              <LeaderboardPreviewTableCell className="w-20 text-accent-amber">
-                {Number(row.bestScore).toFixed(1)}
+              <LeaderboardPreviewTableCell className="flex-1 text-text-tertiary">
+                {row.language}
               </LeaderboardPreviewTableCell>
             </LeaderboardPreviewTableRow>
           ))}

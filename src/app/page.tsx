@@ -1,6 +1,18 @@
+import { Suspense } from "react";
 import { CodeInputSection } from "@/components/code-input";
 import { FooterStats } from "@/components/footer-stats";
 import { LeaderboardPreview } from "@/components/leaderboard-preview";
+import { LeaderboardPreviewSkeleton } from "@/components/leaderboard-preview-skeleton";
+
+function FooterStatsSkeleton() {
+  return (
+    <div className="flex justify-center gap-6 font-mono text-sm">
+      <div className="h-4 w-24 animate-pulse rounded bg-border-secondary" />
+      <div className="h-4 w-2 animate-pulse rounded bg-border-secondary" />
+      <div className="h-4 w-20 animate-pulse rounded bg-border-secondary" />
+    </div>
+  );
+}
 
 export default function HomePage() {
   return (
@@ -17,9 +29,13 @@ export default function HomePage() {
 
       <CodeInputSection />
 
-      <FooterStats />
+      <Suspense fallback={<FooterStatsSkeleton />}>
+        <FooterStats />
+      </Suspense>
 
-      <LeaderboardPreview />
+      <Suspense fallback={<LeaderboardPreviewSkeleton />}>
+        <LeaderboardPreview />
+      </Suspense>
     </div>
   );
 }

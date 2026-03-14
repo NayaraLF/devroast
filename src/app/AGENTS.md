@@ -104,6 +104,45 @@ export default async function ResultPage({
 2. **Server Actions para mutations** - Executar no server
 3. **Client Components apenas quando necessário** - Estado interativo
 4. **Tipar tudo** - Interfaces para props e retornos
+5. **Usar Promise.all para queries paralelas** - Quando múltiplas queries são independentes, executar em paralelo para melhor performance
+
+### Promise.all para Queries Paralelas
+
+```ts
+// ✅ Bom - queries em paralelo
+export async function getPageData() {
+  const [leaderboard, stats, recentRoasts] = await Promise.all([
+    getLeaderboard(),
+    getStats(),
+    getRecentRoasts(),
+  ]);
+
+  return { leaderboard, stats, recentRoasts };
+}
+
+// ❌ Evitar - queries sequenciais
+export async function getPageData() {
+  const leaderboard = await getLeaderboard();
+  const stats = await getStats();  // espera leaderboard
+  const recentRoasts = await getRecentRoasts();  // espera stats
+  return { leaderboard, stats, recentRoasts };
+}
+```
+
+## Suspense para Loading States
+
+```ts
+import { Suspense } from "react";
+import { ComponentSkeleton } from "./component-skeleton";
+
+export default async function Page() {
+  return (
+    <Suspense fallback={<ComponentSkeleton />}>
+      <Component />
+    </Suspense>
+  );
+}
+```
 
 ## Estrutura de Página Completa
 
