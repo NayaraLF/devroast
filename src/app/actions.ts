@@ -183,28 +183,33 @@ export async function getStats() {
 }
 
 export async function getShameLeaderboard() {
-  const result = (await db.execute(
-    "SELECT r.score, s.language, s.code FROM roasts r JOIN submissions s ON r.submission_id = s.id ORDER BY r.score ASC LIMIT 3",
-  )) as { score: string; language: string; code: string }[];
+  try {
+    const result = (await db.execute(
+      "SELECT r.score, s.language, s.code FROM roasts r JOIN submissions s ON r.submission_id = s.id ORDER BY r.score ASC LIMIT 3",
+    )) as { score: string; language: string; code: string }[];
 
-  const { codeToHtml } = await import("shiki");
+    const { codeToHtml } = await import("shiki");
 
-  const data = await Promise.all(
-    result.map(async (row, index) => {
-      const html = await codeToHtml(row.code, {
-        lang: row.language,
-        theme: "vesper",
-      });
+    const data = await Promise.all(
+      result.map(async (row, index) => {
+        const html = await codeToHtml(row.code, {
+          lang: row.language,
+          theme: "vesper",
+        });
 
-      return {
-        rank: index + 1,
-        score: row.score,
-        language: row.language,
-        code: row.code,
-        html,
-      };
-    }),
-  );
+        return {
+          rank: index + 1,
+          score: row.score,
+          language: row.language,
+          code: row.code,
+          html,
+        };
+      }),
+    );
 
-  return data;
+    return data;
+  } catch (error) {
+    console.error("Error fetching shame leaderboard:", error);
+    return [];
+  }
 }
