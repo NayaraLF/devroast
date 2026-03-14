@@ -1,6 +1,7 @@
 "use server";
 
 import { faker } from "@faker-js/faker";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { desc, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { leaderboard, roasts, submissions } from "@/db/schema";
@@ -9,24 +10,97 @@ function generateIpHash(): string {
   return faker.string.alphanumeric(64).toLowerCase();
 }
 
-const IMPROVEMENTS = [
-  "Use nomes mais descritivos para variáveis",
-  "Adicione tratamento de erros adequado",
-  "Considere usar async/await em vez de Promises",
-  "Extraia lógica repetida para funções reutilizáveis",
-  "Adicione comments explicando o porquê, não o quê",
-  "Use types adequados para melhor segurança",
-  "Evite side effects desnecessários",
-  "Implemente testes unitários",
-  "Use early returns para evitar nesting profundo",
-];
+async function generateFeedbackWithAI(
+  code: string,
+  language: string,
+  roastMode: boolean,
+): Promise<{
+  score: string;
+  feedback: string;
+  improvements: string[];
+}> {
+  const apiKey = process.env.GOOGLE_API_KEY;
 
-function generateFeedback(roastMode: boolean): {
+  if (!apiKey) {
+    console.warn("GOOGLE_API_KEY not set, using fallback mock");
+    return generateMockFeedback(roastMode);
+  }
+
+  const genAI = new GoogleGenerativeAI(apiKey);
+  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+  const mode = roastMode ? "roast" : "constructive";
+  const tone = roastMode
+    ? "sarcástico, humorístico, irônico, bem crítico"
+    : "amigável, construtivo, encorajador";
+
+  const prompt = `Você é um desenvolvedor sênior que está revisando código. Analise o código abaixo e forneça um feedback.
+
+Linguagem: ${language}
+Código:
+\`\`\`${language}
+${code}
+\`\`\`
+
+Modo: ${mode}
+Tom: ${tone}
+
+Forneça a resposta APENAS em formato JSON válido (sem markdown, sem texto adicional), com esta estrutura exata:
+{
+  "score": "nota de 0 a 10 com 2 casas decimais",
+  "feedback": "uma frase de feedback sobre o código",
+  "improvements": ["sugestão 1", "sugestão 2", "sugestão 3"]
+}
+
+Critérios para score:
+- 0-3: código muito ruim, muitos problemas
+- 4-6: código regular, alguns problemas
+- 7-8: código bom, poucos problemas
+- 9-10: código excelente
+
+Responda apenas com JSON válido:`;
+
+  try {
+    const result = await model.generateContent(prompt);
+    const responseText = result.response.text();
+
+    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      console.error("Invalid JSON response:", responseText);
+      return generateMockFeedback(roastMode);
+    }
+
+    const parsed = JSON.parse(jsonMatch[0]);
+
+    return {
+      score: parsed.score || "5.00",
+      feedback: parsed.feedback || "Código analisado.",
+      improvements: Array.isArray(parsed.improvements)
+        ? parsed.improvements.slice(0, 4)
+        : [],
+    };
+  } catch (error) {
+    console.error("Error calling Gemini API:", error);
+    return generateMockFeedback(roastMode);
+  }
+}
+
+function generateMockFeedback(roastMode: boolean): {
   score: string;
   feedback: string;
   improvements: string[];
 } {
-  const score = (Math.random() * 9.9 + 0.1).toFixed(2);
+  const IMPROVEMENTS = [
+    "Use nomes mais descritivos para variáveis",
+    "Adicione tratamento de erros adequado",
+    "Considere usar async/await em vez de Promises",
+    "Extraia lógica repetida para funções reutilizáveis",
+    "Adicione comments explicando o porquê, não o quê",
+    "Use types adequados para melhor segurança",
+    "Evite side effects desnecessários",
+    "Implemente testes unitários",
+    "Use early returns para evitar nesting profundo",
+  ];
 
   const roastFeedback = [
     "Olha, esse código tem alguns problemas sérios. O loop poderia ser otimizado e a nomenclatura está confuse. Para o bem do código, considere refatorar.",
@@ -44,6 +118,7 @@ function generateFeedback(roastMode: boolean): {
     "Uma sugestão: use types adequados para melhor segurança. Isso previne bugs comuns em tempo de execução.",
   ];
 
+  const score = (Math.random() * 9.9 + 0.1).toFixed(2);
   const improvements = Array.from(
     { length: faker.number.int({ min: 2, max: 4 }) },
     () => faker.helpers.arrayElement(IMPROVEMENTS),
@@ -70,7 +145,11 @@ export async function submitCode({
   const ipHash = generateIpHash();
   const submissionId = faker.string.uuid();
   const roastId = faker.string.uuid();
-  const { score, feedback, improvements } = generateFeedback(roastMode);
+  const { score, feedback, improvements } = await generateFeedbackWithAI(
+    code,
+    language,
+    roastMode,
+  );
 
   await db.insert(submissions).values({
     id: submissionId,
@@ -148,11 +227,9 @@ async function recalculateRanking() {
 }
 
 export async function getLeaderboard() {
-  "use cache";
-
   try {
     const result = (await db.execute(
-      "SELECT r.score, s.language, s.code FROM roasts r JOIN submissions s ON r.submission_id = s.id ORDER BY r.score ASC LIMIT 20",
+      "SELECT r.score, s.language, s.code FROM roasts r JOIN submissions s ON r.submission_id = s.id ORDER BY r.score DESC LIMIT 20",
     )) as { score: string; language: string; code: string }[];
 
     const { codeToHtml } = await import("shiki");
@@ -182,8 +259,6 @@ export async function getLeaderboard() {
 }
 
 export async function getStats() {
-  "use cache";
-
   const totalSubmissions = await db
     .select({ count: submissions.id })
     .from(submissions);
@@ -206,8 +281,6 @@ export async function getStats() {
 }
 
 export async function getShameLeaderboard() {
-  "use cache";
-
   try {
     const result = (await db.execute(
       "SELECT r.score, s.language, s.code FROM roasts r JOIN submissions s ON r.submission_id = s.id ORDER BY r.score ASC LIMIT 3",

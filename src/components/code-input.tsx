@@ -38,6 +38,8 @@ interface RoastResult {
   score: string;
   feedback: string;
   improvements: string[];
+  code: string;
+  language: string;
 }
 
 export function LanguageSelector({
@@ -303,17 +305,39 @@ export function RoastResultCard({
   onClose: () => void;
 }) {
   const scoreNumber = parseFloat(result.score);
+  const lines = result.code.split("\n");
+  const lineCount = lines.length;
+
+  const getScoreColor = () => {
+    if (scoreNumber >= 7) return "text-accent-green";
+    if (scoreNumber >= 4) return "text-accent-amber";
+    return "text-accent-red";
+  };
+
+  const getVerdict = () => {
+    if (scoreNumber >= 8) return "excellent_code";
+    if (scoreNumber >= 6) return "decent_work";
+    if (scoreNumber >= 4) return "needs_work";
+    if (scoreNumber >= 2) return "needs_serious_help";
+    return "code_disaster";
+  };
+
+  const getVerdictColor = () => {
+    if (scoreNumber >= 7) return "text-accent-green";
+    if (scoreNumber >= 4) return "text-accent-amber";
+    return "text-accent-red";
+  };
 
   return (
     <div
       className={twMerge(
-        "animate-in fade-in slide-in-from-bottom-4 rounded-lg border border-border-primary bg-bg-surface p-6",
+        "animate-in fade-in slide-in-from-bottom-4 rounded-lg border border-border-primary bg-bg-page",
         className,
       )}
     >
-      <div className="mb-4 flex items-center justify-between">
+      <div className="flex items-center justify-between border-b border-border-primary px-6 py-4">
         <h3 className="font-mono text-lg font-bold text-text-primary">
-          Your Code Score
+          Roast Result
         </h3>
         <button
           type="button"
@@ -325,44 +349,127 @@ export function RoastResultCard({
         </button>
       </div>
 
-      <div className="mb-6 text-center">
-        <div
-          className={twMerge(
-            "inline-block rounded-lg px-6 py-4 font-mono text-5xl font-bold",
-            scoreNumber >= 7 && "text-accent-green",
-            scoreNumber >= 4 && scoreNumber < 7 && "text-accent-amber",
-            scoreNumber < 4 && "text-accent-red",
-          )}
-        >
-          {result.score}
-        </div>
-        <p className="mt-2 font-mono text-sm text-text-tertiary">/ 10</p>
-      </div>
+      <div className="p-6">
+        <div className="mb-8 flex gap-12">
+          <div className="flex flex-col items-center">
+            <div
+              className={twMerge(
+                "relative flex h-[140px] w-[140px] items-center justify-center rounded-full border-4",
+                scoreNumber >= 7 && "border-accent-green",
+                scoreNumber >= 4 && scoreNumber < 7 && "border-accent-amber",
+                scoreNumber < 4 && "border-accent-red",
+              )}
+              style={{
+                background: `conic-gradient(${
+                  scoreNumber >= 7
+                    ? "#10b981"
+                    : scoreNumber >= 4
+                      ? "#f59e0b 0% 60%, #10b981 60%"
+                      : "#ef4444 0% 40%, #f59e0b 40%"
+                } ${scoreNumber * 10}%, transparent ${scoreNumber * 10}%)`,
+              }}
+            >
+              <div className="flex h-[120px] w-[120px] items-center justify-center rounded-full bg-bg-page">
+                <span
+                  className={twMerge(
+                    "font-mono text-4xl font-bold",
+                    getScoreColor(),
+                  )}
+                >
+                  {result.score}
+                </span>
+              </div>
+            </div>
+            <p className="mt-2 font-mono text-sm text-text-tertiary">/ 10</p>
+          </div>
 
-      <div className="mb-4">
-        <p className="font-mono text-sm text-text-secondary">
-          {result.feedback}
-        </p>
-      </div>
-
-      {result.improvements.length > 0 && (
-        <div>
-          <p className="mb-2 font-mono text-xs font-bold text-text-tertiary uppercase">
-            Suggestions
-          </p>
-          <ul className="space-y-1">
-            {result.improvements.map((improvement, index) => (
-              <li
-                key={index}
-                className="flex items-start gap-2 font-mono text-xs text-text-secondary"
+          <div className="flex-1 space-y-4">
+            <div className="flex items-center gap-2">
+              <span
+                className={twMerge("h-2 w-2 rounded-full", getVerdictColor())}
+              />
+              <span
+                className={twMerge(
+                  "font-mono text-sm font-medium",
+                  getVerdictColor(),
+                )}
               >
-                <span className="text-accent-green">→</span>
-                {improvement}
-              </li>
-            ))}
-          </ul>
+                verdict: {getVerdict()}
+              </span>
+            </div>
+
+            <blockquote className="border-l-2 border-border-primary pl-4">
+              <p className="font-mono text-lg text-text-primary italic">
+                "{result.feedback}"
+              </p>
+            </blockquote>
+
+            <div className="flex items-center gap-4 font-mono text-xs text-text-tertiary">
+              <span>lang: {result.language}</span>
+              <span>·</span>
+              <span>{lineCount} lines</span>
+            </div>
+          </div>
         </div>
-      )}
+
+        <div className="mb-8 border-b border-border-primary" />
+
+        <div className="mb-6">
+          <h4 className="mb-4 flex items-center gap-2 font-mono text-sm font-bold text-text-primary">
+            {"//"} your_submission
+          </h4>
+
+          <div className="overflow-hidden rounded-lg border border-border-primary bg-bg-input">
+            <div className="flex">
+              <div className="flex w-12 flex-col border-r border-border-primary bg-bg-surface px-3 py-4 text-right font-mono text-xs text-text-tertiary">
+                {lines.map((_, i) => (
+                  <span key={i}>{i + 1}</span>
+                ))}
+              </div>
+              <pre className="flex-1 overflow-x-auto p-4 font-mono text-xs text-text-primary">
+                <code>{result.code}</code>
+              </pre>
+            </div>
+          </div>
+        </div>
+
+        <div className="border-b border-border-primary" />
+
+        <div className="mt-6">
+          <h4 className="mb-4 flex items-center gap-2 font-mono text-sm font-bold text-text-primary">
+            {"//"} detailed_analysis
+          </h4>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            {result.improvements.map((improvement, index) => (
+              <div
+                key={index}
+                className="rounded-lg border border-border-primary bg-bg-surface p-4"
+              >
+                <div className="mb-2 flex items-center gap-2">
+                  <span
+                    className={twMerge(
+                      "h-2 w-2 rounded-full",
+                      index === 0 ? "bg-accent-red" : "bg-accent-amber",
+                    )}
+                  />
+                  <span
+                    className={twMerge(
+                      "font-mono text-xs font-medium",
+                      index === 0 ? "text-accent-red" : "text-accent-amber",
+                    )}
+                  >
+                    {index === 0 ? "critical" : "medium"}
+                  </span>
+                </div>
+                <p className="font-mono text-sm text-text-primary">
+                  {improvement}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -394,6 +501,8 @@ export function CodeInputSection() {
         score: response.score,
         feedback: response.feedback,
         improvements: response.improvements,
+        code,
+        language,
       });
     } catch (error) {
       console.error("Failed to submit code:", error);
@@ -425,6 +534,18 @@ export function CodeInputSection() {
                 onChange={(e) => {
                   if (e.target.value.length <= MAX_CODE_LENGTH) {
                     setCode(e.target.value);
+                  }
+                }}
+                onPaste={(e) => {
+                  const text = e.clipboardData.getData("text");
+                  const target = e.target as HTMLTextAreaElement;
+                  const start = target.selectionStart;
+                  const end = target.selectionEnd;
+                  const before = code.substring(0, start);
+                  const after = code.substring(end);
+                  const newValue = before + text + after;
+                  if (newValue.length <= MAX_CODE_LENGTH) {
+                    setCode(newValue);
                   }
                 }}
                 spellCheck={false}
