@@ -15,7 +15,8 @@
     "ci:lint": "biome check .",
     "ci:build": "npm run build",
     "ci:test": "jest",
-    "ci": "npm run ci:lint && npm run ci:build && npm run ci:test"
+    "ci": "npm run ci:lint && npm run ci:build && npm run ci:test",
+    "test": "jest"
   },
   "dependencies": {
     "@base-ui/react": "^1.3.0",
