@@ -1,9 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  experimental: {
-    cacheComponents: true,
-  },
+  serverExternalPackages: ["@takumi-rs/core", "@takumi-rs/image-response"],
 };
 
 export default nextConfig;

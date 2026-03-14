@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronDown } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { submitCode } from "@/app/actions";
@@ -21,18 +22,6 @@ const LANGUAGES = [
 ];
 
 const MAX_CODE_LENGTH = 2000;
-
-const DEFAULT_CODE = `function calculateTotal(items) {
-  var total = 0;
-  for (var i = 0; i < items.length; i++) {
-    total = total + items[i].price;
-  }
-  if (total > 100) {
-    console.log("discount applied");
-    total = total * 0.9;
-  }
-  return total;
-}`;
 
 interface RoastResult {
   score: string;
@@ -127,7 +116,6 @@ export function CodeInputBody({
         "relative flex min-h-[360px] w-full max-h-[500px] overflow-y-auto bg-bg-input",
         className,
       )}
-      style={{ zIndex: 0 }}
       {...props}
     >
       {children}
@@ -143,7 +131,7 @@ export function CodeInputLineNumbers({
   return (
     <div
       className={twMerge(
-        "flex w-12 flex-col border-r border-border-primary bg-bg-surface px-3 py-4 text-right font-mono text-xs text-text-tertiary",
+        "pointer-events-none flex w-12 flex-col border-r border-border-primary bg-bg-surface px-3 py-4 text-right font-mono text-xs text-text-tertiary",
         className,
       )}
       style={{ zIndex: 0 }}
@@ -163,7 +151,7 @@ export function CodeInputTextarea({
   return (
     <textarea
       className={twMerge(
-        "flex-1 w-full min-h-[300px] resize-none bg-transparent p-4 font-mono text-sm text-text-primary outline-none focus:outline-none",
+        "pointer-events-auto flex-1 w-full min-h-[300px] resize-none bg-transparent p-4 font-mono text-sm text-text-primary focus:outline-none",
         className,
       )}
       style={{ zIndex: 1, position: "relative" }}
@@ -475,7 +463,8 @@ export function RoastResultCard({
 }
 
 export function CodeInputSection() {
-  const [code, setCode] = useState(DEFAULT_CODE);
+  const router = useRouter();
+  const [code, setCode] = useState("");
   const [language, setLanguage] = useState("javascript");
   const [roastMode, setRoastMode] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -497,13 +486,7 @@ export function CodeInputSection() {
         language,
         roastMode,
       });
-      setResult({
-        score: response.score,
-        feedback: response.feedback,
-        improvements: response.improvements,
-        code,
-        language,
-      });
+      router.push(`/result/${response.roastId}`);
     } catch (error) {
       console.error("Failed to submit code:", error);
     } finally {
@@ -531,23 +514,7 @@ export function CodeInputSection() {
               <CodeInputLineNumbers lineCount={Math.max(lines.length, 10)} />
               <CodeInputTextarea
                 value={code}
-                onChange={(e) => {
-                  if (e.target.value.length <= MAX_CODE_LENGTH) {
-                    setCode(e.target.value);
-                  }
-                }}
-                onPaste={(e) => {
-                  const text = e.clipboardData.getData("text");
-                  const target = e.target as HTMLTextAreaElement;
-                  const start = target.selectionStart;
-                  const end = target.selectionEnd;
-                  const before = code.substring(0, start);
-                  const after = code.substring(end);
-                  const newValue = before + text + after;
-                  if (newValue.length <= MAX_CODE_LENGTH) {
-                    setCode(newValue);
-                  }
-                }}
+                onChange={(e) => setCode(e.target.value)}
                 spellCheck={false}
                 placeholder="Paste your code here..."
               />

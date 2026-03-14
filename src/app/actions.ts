@@ -206,6 +206,7 @@ export async function submitCode({
 
   return {
     submissionId,
+    roastId,
     score,
     feedback,
     improvements,
@@ -309,5 +310,47 @@ export async function getShameLeaderboard() {
   } catch (error) {
     console.error("Error fetching shame leaderboard:", error);
     return [];
+  }
+}
+
+export async function getRoastById(id: string) {
+  try {
+    const result = (await db.execute(
+      `SELECT 
+        r.id,
+        r.score::numeric as score,
+        r.feedback,
+        r.improvements,
+        s.language,
+        s.code,
+        LENGTH(s.code) - LENGTH(REPLACE(s.code, E'\n', '')) + 1 as lines
+      FROM roasts r
+      JOIN submissions s ON r.submission_id = s.id
+      WHERE r.id = '${id}'`,
+    )) as {
+      id: string;
+      score: number;
+      feedback: string;
+      improvements: string[];
+      language: string;
+      code: string;
+      lines: number;
+    }[];
+
+    if (result.length === 0) return null;
+
+    const row = result[0];
+    return {
+      id: row.id,
+      score: row.score.toString(),
+      feedback: row.feedback,
+      improvements: row.improvements || [],
+      language: row.language,
+      code: row.code,
+      lines: row.lines,
+    };
+  } catch (error) {
+    console.error("Error fetching roast:", error);
+    return null;
   }
 }
