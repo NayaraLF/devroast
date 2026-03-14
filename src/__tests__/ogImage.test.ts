@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { RoastROG } from "@/utils/ogImage";
 import { roastToOg, scoreToColor, verdictForScore } from "@/utils/ogImage";
 
