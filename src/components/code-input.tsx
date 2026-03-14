@@ -125,6 +125,7 @@ export function CodeInputBody({
         "relative flex min-h-[360px] w-full max-h-[500px] overflow-y-auto bg-bg-input",
         className,
       )}
+      style={{ zIndex: 0 }}
       {...props}
     >
       {children}
@@ -143,6 +144,7 @@ export function CodeInputLineNumbers({
         "flex w-12 flex-col border-r border-border-primary bg-bg-surface px-3 py-4 text-right font-mono text-xs text-text-tertiary",
         className,
       )}
+      style={{ zIndex: 0 }}
       {...props}
     >
       {Array.from({ length: lineCount }, (_, i) => (
@@ -159,9 +161,10 @@ export function CodeInputTextarea({
   return (
     <textarea
       className={twMerge(
-        "flex-1 w-full min-h-[300px] resize-none bg-transparent p-4 font-mono text-sm text-text-primary outline-none",
+        "flex-1 w-full min-h-[300px] resize-none bg-transparent p-4 font-mono text-sm text-text-primary outline-none focus:outline-none",
         className,
       )}
+      style={{ zIndex: 1, position: "relative" }}
       {...props}
     />
   );
