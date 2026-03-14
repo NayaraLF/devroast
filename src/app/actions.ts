@@ -184,12 +184,13 @@ export async function getStats() {
 
 export async function getShameLeaderboard() {
   const result = (await db.execute(
-    "SELECT r.score, s.language FROM roasts r JOIN submissions s ON r.submission_id = s.id ORDER BY r.score ASC LIMIT 3",
-  )) as { score: string; language: string }[];
+    "SELECT r.score, s.language, s.code FROM roasts r JOIN submissions s ON r.submission_id = s.id ORDER BY r.score ASC LIMIT 3",
+  )) as { score: string; language: string; code: string }[];
 
   return result.map((row, index) => ({
     rank: index + 1,
     score: row.score,
     language: row.language,
+    code: row.code,
   }));
 }

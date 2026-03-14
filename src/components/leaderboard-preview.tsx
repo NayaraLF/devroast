@@ -1,7 +1,10 @@
+import { ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
 import type { HTMLAttributes } from "react";
+import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { getShameLeaderboard } from "@/app/actions";
+import { CodeBlock } from "@/components/ui/code-block";
 
 export function LeaderboardPreviewRoot({
   className,
@@ -68,93 +71,61 @@ export function LeaderboardPreviewLink({
   );
 }
 
-export function LeaderboardPreviewTable({
-  className,
-  children,
-  ...props
-}: HTMLAttributes<HTMLDivElement>) {
+type ShameEntry = {
+  rank: number;
+  score: string;
+  language: string;
+  code: string;
+};
+
+function LeaderboardEntry({ entry }: { entry: ShameEntry }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const lines = entry.code.split("\n");
+  const isLong = lines.length > 5;
+
   return (
-    <div
-      className={twMerge(
-        "overflow-hidden rounded-lg border border-border-primary",
-        className,
-      )}
-      {...props}
-    >
-      {children}
+    <div className="overflow-hidden rounded-lg border border-border-primary">
+      <div className="flex items-center justify-between border-b border-border-primary bg-bg-surface px-5 py-3">
+        <div className="flex items-center gap-4">
+          <span className="font-mono text-sm font-bold text-text-tertiary">
+            #{entry.rank}
+          </span>
+          <span className="font-mono text-sm text-accent-red">
+            {Number(entry.score).toFixed(1)}
+          </span>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="font-mono text-xs text-text-secondary">
+            {entry.language}
+          </span>
+          {isLong && (
+            <button
+              type="button"
+              onClick={() => setIsOpen(!isOpen)}
+              className="flex items-center gap-1 font-mono text-xs text-text-tertiary hover:text-text-primary"
+            >
+              <span className="text-[10px] uppercase">
+                {isOpen ? "Collapse" : "Expand"}
+              </span>
+              {isOpen ? (
+                <ChevronUp className="h-3 w-3" />
+              ) : (
+                <ChevronDown className="h-3 w-3" />
+              )}
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div
+        className={twMerge(
+          "bg-bg-input",
+          !isOpen && isLong && "max-h-[200px] overflow-hidden",
+        )}
+      >
+        <CodeBlock code={entry.code} language={entry.language} />
+      </div>
     </div>
-  );
-}
-
-export function LeaderboardPreviewTableHeader({
-  className,
-  children,
-  ...props
-}: HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={twMerge("flex bg-bg-surface px-5 py-2.5", className)}
-      {...props}
-    >
-      {children}
-    </div>
-  );
-}
-
-export function LeaderboardPreviewTableHeaderCell({
-  className,
-  children,
-  ...props
-}: HTMLAttributes<HTMLSpanElement>) {
-  return (
-    <span
-      className={twMerge("font-mono text-xs text-text-tertiary", className)}
-      {...props}
-    >
-      {children}
-    </span>
-  );
-}
-
-export function LeaderboardPreviewTableBody({
-  className,
-  children,
-  ...props
-}: HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={twMerge("divide-y divide-border-primary", className)}
-      {...props}
-    >
-      {children}
-    </div>
-  );
-}
-
-export function LeaderboardPreviewTableRow({
-  className,
-  children,
-  ...props
-}: HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={twMerge("flex px-5 py-3 font-mono text-xs", className)}
-      {...props}
-    >
-      {children}
-    </div>
-  );
-}
-
-export function LeaderboardPreviewTableCell({
-  className,
-  children,
-  ...props
-}: HTMLAttributes<HTMLSpanElement>) {
-  return (
-    <span className={twMerge(className)} {...props}>
-      {children}
-    </span>
   );
 }
 
@@ -172,37 +143,11 @@ export async function LeaderboardPreview() {
         </LeaderboardPreviewLink>
       </LeaderboardPreviewHeader>
 
-      <LeaderboardPreviewTable>
-        <LeaderboardPreviewTableHeader>
-          <LeaderboardPreviewTableHeaderCell className="w-12">
-            rank
-          </LeaderboardPreviewTableHeaderCell>
-          <LeaderboardPreviewTableHeaderCell className="w-16">
-            score
-          </LeaderboardPreviewTableHeaderCell>
-          <LeaderboardPreviewTableHeaderCell className="flex-1">
-            lang
-          </LeaderboardPreviewTableHeaderCell>
-        </LeaderboardPreviewTableHeader>
-
-        <LeaderboardPreviewTableBody>
-          {shameData.map((row) => (
-            <LeaderboardPreviewTableRow key={row.rank}>
-              <LeaderboardPreviewTableCell className="w-12 text-text-secondary">
-                #{row.rank}
-              </LeaderboardPreviewTableCell>
-              <LeaderboardPreviewTableCell className="w-16 text-accent-red">
-                {Number(row.score).toFixed(1)}
-              </LeaderboardPreviewTableCell>
-              <LeaderboardPreviewTableCell className="flex-1 text-text-tertiary">
-                {row.language}
-              </LeaderboardPreviewTableCell>
-            </LeaderboardPreviewTableRow>
-          ))}
-        </LeaderboardPreviewTableBody>
-      </LeaderboardPreviewTable>
+      <div className="space-y-4">
+        {shameData.map((row) => (
+          <LeaderboardEntry key={row.rank} entry={row} />
+        ))}
+      </div>
     </LeaderboardPreviewRoot>
   );
 }
-
-LeaderboardPreview.displayName = "LeaderboardPreview";
