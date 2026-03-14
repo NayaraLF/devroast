@@ -15,7 +15,7 @@ export type ShameEntry = {
 export function LeaderboardEntry({ entry }: { entry: ShameEntry }) {
   const [isOpen, setIsOpen] = useState(false);
   const lines = entry.code.split("\n");
-  const isLong = lines.length > 5;
+  const isLong = lines.length > 10;
 
   return (
     <div className="overflow-hidden rounded-lg border border-border-primary">
@@ -31,6 +31,9 @@ export function LeaderboardEntry({ entry }: { entry: ShameEntry }) {
         <div className="flex items-center gap-3">
           <span className="font-mono text-xs text-text-secondary">
             {entry.language}
+          </span>
+          <span className="font-mono text-xs text-text-tertiary">
+            {lines.length} lines
           </span>
           {isLong && (
             <button
@@ -54,7 +57,7 @@ export function LeaderboardEntry({ entry }: { entry: ShameEntry }) {
       <div
         className={twMerge(
           "bg-bg-input",
-          !isOpen && isLong && "max-h-[200px] overflow-hidden",
+          !isOpen && isLong && "max-h-[300px] overflow-y-auto",
         )}
       >
         <CodeBlockDisplay html={entry.html} code={entry.code} />
